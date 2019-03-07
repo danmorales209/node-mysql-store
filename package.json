@@ -1,0 +1,25 @@
+{
+  "name": "node-mysql-store",
+  "version": "1.0.0",
+  "description": "A CLI nodeJS app using MySQL to make a store ordering system",
+  "main": "bamazonCustomer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danmorales209/node-mysql-store.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/danmorales209/node-mysql-store/issues"
+  },
+  "homepage": "https://github.com/danmorales209/node-mysql-store#readme",
+  "dependencies": {
+    "dotenv": "^6.2.0",
+    "inquirer": "^6.2.2",
+    "mysql": "^2.16.0"
+  }
+}
