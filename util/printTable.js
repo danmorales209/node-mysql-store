@@ -1,12 +1,12 @@
 var dataTable = function () {
-    this.data = {}
+    this.data = [];
 
     this.width = {
-        id: 6,
-        productName: 50,
-        departmentName: 50,
+        item_id: 5,
+        product_name: 50,
+        department_name: 50,
         price: 15,
-        quantity: 10
+        stock_quantity: 10
     };
 
 
@@ -18,6 +18,57 @@ var dataTable = function () {
         return this.data;
     };
 
+    this.reset = function () {
+        this.data = {};
+    };
+
+    this.printBreak = function() {
+        let breakString = "";
+        for (let i = 0; i < 146; i++) {
+            breakString+= "-";
+        }
+        console.log(breakString);
+    }
+
+    this.printEntry = function (label, padding) {
+        let cellString = "";
+        for (let i = 0; i < padding; i++) {
+            if (i !== 1) {
+                cellString += " ";
+            }
+            else {
+                cellString += label;
+                i += label.length - 1;
+            }
+        }
+        return cellString;
+    };
+
+    this.printRows = function () {
+        let keys = [];
+        let outString = "";
+
+        this.data.forEach(row => {
+            outString = "| ";
+            keys = Object.keys(row);
+
+            for (i in keys) {
+                outString += this.printEntry((row[keys[i]]).toString(), this.width[keys[i]]);
+
+                if (keys[Number(i) + 1]) {
+                    outString += " | ";
+                }
+                else {
+                    outString += " |";
+                }
+
+            }
+            console.log(outString);
+            this.printBreak();
+
+        }, this);
+    }
+
     this.printHeaders = function (strArray) {
         let padding = 0;
         let outString = "| ";
@@ -26,7 +77,7 @@ var dataTable = function () {
         for (let i = 0; i < strArray.length; i++) {
             if (strArray[i] === "item_id") {
                 tempString = "ID";
-                padding = this.width.id;
+                padding = this.width[strArray[i]];
 
                 for (let j = 0; j < padding; j++) {
                     if (j !== 1) {
@@ -41,7 +92,7 @@ var dataTable = function () {
             }
             else if (strArray[i] === "product_name") {
                 tempString = "Product Name";
-                padding = this.width.productName;
+                padding = this.width[strArray[i]];
 
                 for (let j = 0; j < padding; j++) {
                     if (j !== 1) {
@@ -56,7 +107,7 @@ var dataTable = function () {
             }
             else if (strArray[i] === "department_name") {
                 tempString = "Department";
-                padding = this.width.departmentName;
+                padding = this.width[strArray[i]];
 
                 for (let j = 0; j < padding; j++) {
                     if (j !== 1) {
@@ -71,7 +122,7 @@ var dataTable = function () {
             }
             else if (strArray[i] === "price") {
                 tempString = "Price";
-                padding = this.width.price;
+                padding = this.width[strArray[i]];
 
                 for (let j = 0; j < padding; j++) {
                     if (j !== 1) {
@@ -86,7 +137,7 @@ var dataTable = function () {
             }
             else if (strArray[i] === "stock_quantity") {
                 tempString = "In Stock";
-                padding = this.width.quantity;
+                padding = this.width[strArray[i]];
 
                 for (let j = 0; j < padding; j++) {
                     if (j !== 1) {
@@ -108,10 +159,13 @@ var dataTable = function () {
         console.log(outString);
     };
 
-    this.initialPrint = function () {
-        this.printHeaders(["item_id", "product_name", "department_name", "price", "stock_quantity"]);
-        // this.
+    this.initialPrint = function (headerArray = ["item_id", "product_name", "department_name", "price", "stock_quantity"]) {
+        this.printBreak();
+        this.printHeaders(headerArray);
+        this.printBreak();
+        this.printRows();
     };
+
 };
 
 module.exports = dataTable;

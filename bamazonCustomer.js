@@ -7,35 +7,28 @@ var server = require('./myConnection');
 var productTable = require('./util/printTable');
 
 var connection = mysql.createConnection(server);
-var myTable = new productTable();
+
 
 
 var main = function() {
     console.clear();
+    var myTable = new productTable();
+    showTable(myTable, myTable.initialPrint);
 
-    showTable(myTable.initialPrint());
 }
 
-var showTable = function(callback) {
+var showTable = function(obj) {
     connection.query("SELECT * FROM products", function (error, data) {
         if (error) {
             return console.error(error);
         }
-        myTable.setData(data);
+        
+        obj.setData(data);
+        obj.initialPrint()
+        
         connection.end();
-        return function() {
-            callback;
+    });
 
-        }
-        
-        
-        /* data.forEach( function (line) {
-            console.log(`ID: ${line.item_id} | ${line.product_name} | ${line.price}`);
-        }); */
-
-        //connection.end();
-        
-    })
 };
 
 main();
