@@ -41,26 +41,20 @@ var showTablePrompt = function (obj) {
                 choices: ["Buy an item", "Quit"]
             }).then(function (response) {
 
-                if (response.selection ==="Buy an item") {
+                if (response.selection === "Buy an item") {
                     console.log("Ok, lets buys someting");
                     connection.resume();
-                    getUserInput();
+                    getUserInput(obj);
                 }
                 else {
                     console.log("Goodbye!");
                     connection.end();
                 }
-
-
-
-
             });
-
     });
-
 };
 
-var getUserInput = function () {
+var getUserInput = function (obj) {
     inquire
         .prompt([
             {
@@ -72,15 +66,20 @@ var getUserInput = function () {
                 message: "How much would you like to purchase?"
             }
         ]).then(function (response) {
-            console.log(response);
+            let newValue = obj.data[Number(response.selectedID)-1].stock_quantity - Number(response.purchaseAmount);
 
-            connection.query("SELECT * FROM products", function (err, data) {
-                if (err) throw err;
+            if (newValue < 0) {
+                newValue = 0;
+            }
 
-                console.log(data);
+            connection.query(`UPDATE products SET stock_quantity = ${newValue} WHERE item_id=${Number(response.selectedID)}`, function (err) {
 
-                connection.pause();
+                if (err) {
+                    throw err;
+                }
+                // connection.pause();
 
+                showTablePrompt(obj);
             });
 
         });
