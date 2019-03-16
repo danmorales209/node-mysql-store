@@ -11,18 +11,24 @@ var dataTable = require('./util/printTable');
 // create the SQL connection as a global variable
 var connection = mysql.createConnection(server);
 
+
 // Main starts the program and initializes the productTable object;
 var main = function () {
     console.clear();
     var myTable = new dataTable();
-    showTablePrompt(myTable);
+    connection.connect(function(err) {
+        if (err) throw err;
+        showTablePrompt(myTable);
+    });
 }
 
 /**
- * Takes in a dataTable object, and 
+ * Takes in a dataTable object, and prints the current state of the table before initiating 
+ * inquirer prompt to get user data.
  * @param {dataTable} obj 
  */
 var showTablePrompt = function (obj) {
+    connection.resume();
 
     connection.query("SELECT * FROM products", function (error, data) {
         if (error) {
@@ -37,7 +43,7 @@ var showTablePrompt = function (obj) {
             .prompt({
                 type: "list",
                 name: "selection",
-                message: "Welcome to Bamazon! HOw can we help you today?",
+                message: "Welcome to Bamazon! How can we help you today?",
                 choices: ["Buy an item", "Quit"]
             }).then(function (response) {
 
@@ -68,7 +74,7 @@ var checkForInt = function (value) {
 
 };
 
-var checkBuyAmount = function(amount) {
+var checkBuyAmount = function (amount) {
     let isValidAmount = checkForInt(amount) && Number(amount) > 0;
 
     if (isValidAmount) {
@@ -94,34 +100,38 @@ var getUserInput = function (obj) {
                 validate: checkBuyAmount
             }
         ]).then(function (response) {
-            
-            let newValue = obj.data[Number(response.selectedID) - 1].stock_quantity - Number(response.purchaseAmount);
+
             let validIDs = obj.data.map(row => row.item_id);
 
             console.clear();
-            
+
             if (validIDs.indexOf(Number(response.selectedID)) < 0) {
                 console.log("I'm sorry, that ID doesn't match anything in our records, please try again.");
                 showTablePrompt(obj);
             }
-
-            else if (newValue < 0) {
-                console.log(`Sorry, Bamazon only has ${obj.data[Number(response.selectedID) - 1].stock_quantity} of ${obj.data[Number(response.selectedID) - 1].product_name}, your request has been cancelled.`);
-                showTablePrompt(obj);
-            }
             else {
+                let newValue = obj.data[Number(response.selectedID) - 1].stock_quantity - Number(response.purchaseAmount);
 
-                console.log(`Thank you for your purchase! ${response.purchaseAmount} units of ${obj.data[Number(response.selectedID) - 1].product_name} cost you $${(Number(response.purchaseAmount) * obj.data[Number(response.selectedID) - 1].price).toFixed(2)}.`)
-
-                connection.query(`UPDATE products SET stock_quantity = ${newValue} WHERE item_id=${Number(response.selectedID)}`, function (err) {
-
-                    if (err) {
-                        throw err;
-                    }
-
+                if (newValue < 0) {
+                    console.log(`Sorry, Bamazon only has ${obj.data[Number(response.selectedID) - 1].stock_quantity} units of ${obj.data[Number(response.selectedID) - 1].product_name}, your request has been cancelled.`);
                     showTablePrompt(obj);
-                });
+                }
+                else {
+
+                    console.log(`Thank you for your purchase! ${response.purchaseAmount} unit${response.purchaseAmount == 1? "": "s"} of ${obj.data[Number(response.selectedID) - 1].product_name} cost you $${(Number(response.purchaseAmount) * obj.data[Number(response.selectedID) - 1].price).toFixed(2)}.`)
+
+                    connection.query(`UPDATE products SET stock_quantity = ${newValue} WHERE item_id=${Number(response.selectedID)}`, function (err) {
+
+                        if (err) {
+                            throw err;
+                        }
+                        connection.pause();
+                        showTablePrompt(obj);
+                    });
+                }
             }
+
+
         });
 }
 
