@@ -84,7 +84,8 @@ var managerPrompt = function (obj) {
             case "View Low Inventory":
 
                 columns = ["item_id", "product_name", "stock_quantity"];
-
+                
+                // use '??' to select colum names
                 connection.query("SELECT ??, ??, ?? FROM products WHERE stock_quantity < 5", columns, function (error, data) {
                     if (error) throw error;
 
@@ -219,7 +220,8 @@ var managerPrompt = function (obj) {
                                 `INSERT INTO products
                                 (product_name, department_name, price, stock_quantity)
                                 VALUES
-                                (?, ?, ?, ?)`, newProduct, function (error, data) {
+                                (?, ?, ?, ?)`, // use '?' as placeholder, data will be entered from next argument
+                                newProduct, function (error, data) {
                                     if (error) throw error;
                                     console.log("Great success!");
 
