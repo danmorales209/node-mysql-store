@@ -45,7 +45,6 @@ var managerPrompt = function (obj) {
 
         switch (answer.choice) {
             case "View Products for Sale":
-                console.log("Here are the current items for sale:\n");
 
                 columns = ["item_id", "product_name", "price", "stock_quantity"];
 
@@ -54,17 +53,18 @@ var managerPrompt = function (obj) {
 
                     obj.setData(data);
 
+                    obj.printBreak(columns);
+                    console.log("Here are the current items for sale:");
                     obj.initialPrint(columns);
 
                     connection.pause();
                     managerPrompt(obj);
                 });
-                
+
                 break;
 
             case "View Low Inventory":
-                console.log("These items have low inventory:\n");
-                
+
                 columns = ["item_id", "product_name", "stock_quantity"];
 
                 connection.query("SELECT ??, ??, ?? FROM products WHERE stock_quantity < 5", columns, function (error, data) {
@@ -72,6 +72,9 @@ var managerPrompt = function (obj) {
                         console.log("No products currently have low inventory.\n");
                     }
                     else {
+
+                        obj.printBreak(columns);
+                        console.log("These items have low inventory:");
                         obj.setData(data);
                         obj.initialPrint(columns)
                     }
@@ -82,8 +85,54 @@ var managerPrompt = function (obj) {
                 break;
 
             case "Add to Inventory":
-                console.log("You need thing-a-ma-bobs?");
-                managerPrompt(obj);
+
+                connection.query("SELECT item_id, product_name FROM products", function (error, data) {
+                    if (error) throw error;
+                    let ids = [];
+                    data.forEach(function (element) {
+                        ids.push(`${element.item_id}: ${element.product_name}`);
+                    });
+
+                    connection.pause();
+
+                    inquire
+                        .prompt([
+                            {
+                                type: "list",
+                                name: "inID",
+                                message: "Select the product you wish to replenish",
+                                choices: ids
+                            },
+                            {
+                                type: "input",
+                                name: "quantity",
+                                message: "How much would you like to purchase?",
+                                validate: checkBuyAmount
+                            }
+                        ]).then(function (answers) {
+                            let updateID = Number(answers.inID.split(":")[0]);
+
+                            connection.resume();
+
+                            connection.query(
+                                `UPDATE products
+                                SET stock_quantity = stock_quantity + ${Number(answers.quantity)}
+                                WHERE item_id = ${updateID}`,
+                                function (error, data) {
+                                    if (error) throw error;
+
+                                    console.log(`${answers.quantity} units of ${ids[updateID - 1].split(": ")[1]} were successfully added to inventory!\n`);
+
+                                    connection.pause();
+
+                                    managerPrompt(obj);
+                                });
+
+                        });
+
+                });
+
+
                 break;
 
             case "Add New Product":
@@ -98,6 +147,25 @@ var managerPrompt = function (obj) {
         }
     });
 
+};
+
+var checkForInt = function (value) {
+    let pattern = new RegExp("^\\d+\\.{0}\\d*$");
+
+    return pattern.test(value);
+
+};
+
+var checkBuyAmount = function (amount) {
+    let isValidAmount = checkForInt(amount) && Number(amount) > 0;
+
+    if (isValidAmount) {
+        return true;
+    }
+
+    else {
+        return "Please enter a non-negtive integer."
+    }
 };
 
 main();
