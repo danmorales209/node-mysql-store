@@ -14,8 +14,12 @@ var connection = mysql.createConnection(server);
 
 // Main starts the program and initializes the productTable object;
 var main = function () {
+
     console.clear();
+
+    // Instantiate a dataTable to pass to the showTablePrompt
     var myTable = new dataTable();
+
     connection.connect(function (err) {
         if (err) throw err;
         showTablePrompt(myTable);
@@ -37,6 +41,8 @@ var showTablePrompt = function (obj) {
 
         obj.setData(data);
         obj.initialPrint()
+
+        // Pause connection until further data fomr the server is required
         connection.pause();
 
         inquire
@@ -45,6 +51,7 @@ var showTablePrompt = function (obj) {
                 name: "selection",
                 message: "Welcome to Bamazon! How can we help you today?",
                 choices: ["Buy an item", "Quit"]
+
             }).then(function (response) {
 
                 if (response.selection === "Buy an item") {
@@ -86,6 +93,11 @@ var checkBuyAmount = function (amount) {
     }
 };
 
+/**
+ * Accepts a dataTable object with previously stored SQL results. Use the results
+ * to get the user input and purchase items in inventory.
+ * @param {dataTable*} obj 
+ */
 var getUserInput = function (obj) {
     inquire
         .prompt([
@@ -99,40 +111,54 @@ var getUserInput = function (obj) {
                 message: "How much would you like to purchase?",
                 validate: checkBuyAmount
             }
+
         ]).then(function (response) {
 
+            // Get the list of valid IDS to display for purhcase
             let validIDs = obj.data.map(row => row.item_id);
 
             console.clear();
 
-            if (validIDs.indexOf(Number(response.selectedID)) < 0) {
+            if (validIDs.indexOf(Number(response.selectedID)) < 0) { // inputted id does not match the list of valid IDs
                 console.log("I'm sorry, that ID doesn't match anything in our records, please try again.");
+
+                // Recursive call to showTablePrompt to loop back to beginning of prompts
                 showTablePrompt(obj);
             }
-            else {
+
+            else { // inputted ID exists in data
+
+                // dataTable object is loaded with SQL data, check that the user input value will not make the inventory negative 
                 let newValue = obj.data[Number(response.selectedID) - 1].stock_quantity - Number(response.purchaseAmount);
 
-                if (newValue < 0) {
+                if (newValue < 0) { // trying to buy more than is inventory
+
                     console.log(`Sorry, Bamazon only has ${obj.data[Number(response.selectedID) - 1].stock_quantity} units of ${obj.data[Number(response.selectedID) - 1].product_name}, your request has been cancelled.`);
+
+                    // Recursive call to showTablePrompt to loop back to beginning of prompts
                     showTablePrompt(obj);
                 }
-                else {
+
+                else { // sufficient stock_quantity to purchase
 
                     console.log(`Thank you for your purchase! ${response.purchaseAmount} unit${response.purchaseAmount == 1 ? "" : "s"} of ${obj.data[Number(response.selectedID) - 1].product_name} cost you $${(Number(response.purchaseAmount) * obj.data[Number(response.selectedID) - 1].price).toFixed(2)}.`)
 
+                    // Update the SQL server with the purchase amount
                     connection.query(`UPDATE products SET stock_quantity = ${newValue} WHERE item_id=${Number(response.selectedID)}`, function (err) {
 
                         if (err) {
                             throw err;
                         }
+                        // Pause the connection so Node will let the program continue
                         connection.pause();
+                        
+                        // Recursive call to showTablePrompt to loop back to beginning of prompts
                         showTablePrompt(obj);
                     });
                 }
             }
-
-
         });
 }
 
+// Call the driver function
 main();
