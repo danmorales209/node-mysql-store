@@ -62,3 +62,4 @@ typings/
 
 # other files / directories
 instructions.md
+package-lock.json
