@@ -132,12 +132,66 @@ var managerPrompt = function (obj) {
 
                 });
 
-
                 break;
 
             case "Add New Product":
-                console.log("Look at this stuff, isn't it neat?");
-                managerPrompt(obj);
+
+                connection.query("SELECT DISTINCT department_name FROM products ORDER BY department_name", function (error, data) {
+                    if (error) throw error;
+
+                    let departments = data.map(element => element.department_name);
+
+                    connection.pause();
+
+                    inquire
+                        .prompt([
+                            {
+                                type: "list",
+                                name: "department_name",
+                                message: "Please select a department",
+                                choices: departments
+                            },
+                            {
+                                name: "product_name",
+                                message: "Please enter the product name:",
+                                validate: (x => x.length <= obj.width.product_name ? true : `Product name cannot exceed ${obj.width.product_name} characters`)
+                            },
+                            {
+                                name: "price",
+                                message: "Please enter the price per unit:\n(Omit currency symbols. Enter up to two digits after the decimal point)\n  $",
+                                validate: checkForCurrency
+                            },
+                            {
+                                name: "stock_quantity",
+                                message: "Please enter the inital amount to purchase",
+                                validate: checkBuyAmount
+                            }
+                        ]).then(function (response) {
+                            
+                            let newProduct = [
+                                response.product_name,
+                                response.department_name,
+                                response.price,
+                                response.stock_quantity
+                            ];
+
+                            connection.resume()
+
+                            connection.query(
+                                `INSERT INTO products
+                                (product_name, department_name, price, stock_quantity)
+                                VALUES
+                                (?, ?, ?, ?)`, newProduct, function (error, data) {
+                                    if (error) throw error;
+                                    console.log("Great success!");
+
+                                    connection.pause();
+
+                                    managerPrompt(obj);
+                                });
+                        });
+                });
+
                 break;
 
             default:
@@ -167,5 +221,16 @@ var checkBuyAmount = function (amount) {
         return "Please enter a non-negtive integer."
     }
 };
+
+var checkForCurrency = function (input) {
+    let pattern = new RegExp('^[\\d]+[\\.]{0,1}[\\d]{0,2}$');
+
+    if (pattern.test(input)) {
+        return true;
+    }
+    else {
+        return "Please enter a unit price without currency symbols and up to 2 digits after a decimal point";
+    }
+}
 
 main();

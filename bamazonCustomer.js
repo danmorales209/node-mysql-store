@@ -16,7 +16,7 @@ var connection = mysql.createConnection(server);
 var main = function () {
     console.clear();
     var myTable = new dataTable();
-    connection.connect(function(err) {
+    connection.connect(function (err) {
         if (err) throw err;
         showTablePrompt(myTable);
     });
@@ -75,7 +75,7 @@ var checkForInt = function (value) {
 };
 
 var checkBuyAmount = function (amount) {
-    let isValidAmount = checkForInt(amount) && Number(amount) > 0;
+    let isValidAmount = (checkForInt(amount) === true) && (Number(amount) > 0);
 
     if (isValidAmount) {
         return true;
@@ -118,7 +118,7 @@ var getUserInput = function (obj) {
                 }
                 else {
 
-                    console.log(`Thank you for your purchase! ${response.purchaseAmount} unit${response.purchaseAmount == 1? "": "s"} of ${obj.data[Number(response.selectedID) - 1].product_name} cost you $${(Number(response.purchaseAmount) * obj.data[Number(response.selectedID) - 1].price).toFixed(2)}.`)
+                    console.log(`Thank you for your purchase! ${response.purchaseAmount} unit${response.purchaseAmount == 1 ? "" : "s"} of ${obj.data[Number(response.selectedID) - 1].product_name} cost you $${(Number(response.purchaseAmount) * obj.data[Number(response.selectedID) - 1].price).toFixed(2)}.`)
 
                     connection.query(`UPDATE products SET stock_quantity = ${newValue} WHERE item_id=${Number(response.selectedID)}`, function (err) {
 
