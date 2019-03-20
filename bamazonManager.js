@@ -41,10 +41,13 @@ var managerPrompt = function (obj) {
     ]).then(function (answer) {
         console.log(answer.choice)
 
+        let columns = [];
+
         switch (answer.choice) {
             case "View Products for Sale":
-                console.log("Look at this stuff, isn't it neat?");
-                let columns = ["item_id", "product_name", "price", "stock_quantity"];
+                console.log("Here are the current items for sale:\n");
+
+                columns = ["item_id", "product_name", "price", "stock_quantity"];
 
                 connection.query("SELECT ??, ??, ??, ?? FROM products", columns, function (error, data) {
                     if (error) throw error;
@@ -60,8 +63,22 @@ var managerPrompt = function (obj) {
                 break;
 
             case "View Low Inventory":
-                console.log("Oh we're running out of SPAM");
-                managerPrompt(obj);
+                console.log("These items have low inventory:\n");
+                
+                columns = ["item_id", "product_name", "stock_quantity"];
+
+                connection.query("SELECT ??, ??, ?? FROM products WHERE stock_quantity < 5", columns, function (error, data) {
+                    if (!data) {
+                        console.log("No products currently have low inventory.\n");
+                    }
+                    else {
+                        obj.setData(data);
+                        obj.initialPrint(columns)
+                    }
+                    connection.pause();
+                    managerPrompt(obj);
+                })
+
                 break;
 
             case "Add to Inventory":
