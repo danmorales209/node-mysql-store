@@ -26,44 +26,39 @@ var dataTable = function () {
 
         let breakString = "";
 
-        if (!columnsArray) {
-            for (let i = 0; i < 146; i++) {
-                breakString += "-";
-            }
-        }
-        else {
+
+        breakString += "-";
+        columnsArray.forEach((col) => {
             breakString += "-";
-            columnsArray.forEach((col) => {
-                breakString += "-";
-                switch (col) {
-                    case "item_id":
-                        for (i = 0; i < this.width.item_id + 2; i++) {
-                            breakString += "-";
-                        }
-                        break;
-                    case "product_name":
-                        for (i = 0; i < this.width.product_name + 2; i++) {
-                            breakString += "-";
-                        }
-                        break;
-                    case "department_name":
-                        for (i = 0; i < this.width.department_name + 2; i++) {
-                            breakString += "-";
-                        }
-                        break;
-                    case "price":
-                        for (i = 0; i < this.width.price + 2; i++) {
-                            breakString += "-";
-                        }
-                        break;
-                    case "stock_quantity":
-                        for (i = 0; i < this.width.stock_quantity + 2; i++) {
-                            breakString += "-";
-                        }
-                        break;
-                }
-            }, this);
-        }
+            switch (col) {
+                case "item_id":
+                    for (i = 0; i < this.width.item_id + 2; i++) {
+                        breakString += "-";
+                    }
+                    break;
+                case "product_name":
+                    for (i = 0; i < this.width.product_name + 2; i++) {
+                        breakString += "-";
+                    }
+                    break;
+                case "department_name":
+                    for (i = 0; i < this.width.department_name + 2; i++) {
+                        breakString += "-";
+                    }
+                    break;
+                case "price":
+                    for (i = 0; i < this.width.price + 2; i++) {
+                        breakString += "-";
+                    }
+                    break;
+                case "stock_quantity":
+                    for (i = 0; i < this.width.stock_quantity + 2; i++) {
+                        breakString += "-";
+                    }
+                    break;
+            }
+        }, this);
+
         console.log(breakString);
     }
 
@@ -81,7 +76,7 @@ var dataTable = function () {
         return cellString;
     };
 
-    this.printRows = function () {
+    this.printRows = function (columns) {
         let keys = [];
         let outString = "";
 
@@ -101,7 +96,7 @@ var dataTable = function () {
 
             }
             console.log(outString);
-            this.printBreak();
+            this.printBreak(columns);
 
         }, this);
     }
@@ -197,10 +192,10 @@ var dataTable = function () {
     };
 
     this.initialPrint = function (headerArray = ["item_id", "product_name", "department_name", "price", "stock_quantity"]) {
-        this.printBreak();
+        this.printBreak(headerArray);
         this.printHeaders(headerArray);
-        this.printBreak();
-        this.printRows();
+        this.printBreak(headerArray);
+        this.printRows(headerArray);
     };
 
 };
