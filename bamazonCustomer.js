@@ -141,10 +141,12 @@ var getUserInput = function (obj) {
 
                 else { // sufficient stock_quantity to purchase
 
-                    console.log(`Thank you for your purchase! ${response.purchaseAmount} unit${response.purchaseAmount == 1 ? "" : "s"} of ${obj.data[Number(response.selectedID) - 1].product_name} cost you $${(Number(response.purchaseAmount) * obj.data[Number(response.selectedID) - 1].price).toFixed(2)}.`)
+                    let cost = (Number(response.purchaseAmount) * obj.data[Number(response.selectedID) - 1].price).toFixed(2);
+
+                    console.log(`Thank you for your purchase! ${response.purchaseAmount} unit${response.purchaseAmount == 1 ? "" : "s"} of ${obj.data[Number(response.selectedID) - 1].product_name} cost you $${cost}.`)
 
                     // Update the SQL server with the purchase amount
-                    connection.query(`UPDATE products SET stock_quantity = ${newValue} WHERE item_id=${Number(response.selectedID)}`, function (err) {
+                    connection.query(`UPDATE products SET stock_quantity = ${newValue}, product_sales = product_sales + ${cost} WHERE item_id=${Number(response.selectedID)}`, function (err) {
 
                         if (err) {
                             throw err;

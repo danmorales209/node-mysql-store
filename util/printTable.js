@@ -10,7 +10,8 @@ var dataTable = function () {
         product_name: 50,
         department_name: 50,
         price: 15,
-        stock_quantity: 10
+        stock_quantity: 10,
+        product_sales: 15
     };
 
 
@@ -77,6 +78,12 @@ var dataTable = function () {
                         breakString += "-";
                     }
                     break;
+
+                case "product_sales":
+                    for (i = 0; i < this.width.product_sales + 2; i++) {
+                        breakString += "-";
+                    }
+                    break;
             }
         }, this);
 
@@ -127,6 +134,7 @@ var dataTable = function () {
             keys = Object.keys(row);
 
             for (i in keys) {
+
 
                 // keys[i] gets the data in the row, and width [ keys [i] ] gets the max width from the object
                 outString += this.printEntry( (row[ keys[i] ]).toString() , this.width[ keys [i] ] );
@@ -233,6 +241,20 @@ var dataTable = function () {
                     }
                 }
             }
+            else if (strArray[i] === "product_sales") {
+                tempString = "Sales";
+                padding = this.width[strArray[i]];
+
+                for (let j = 0; j < padding; j++) {
+                    if (j !== 1) {
+                        outString += " ";
+                    }
+                    else {
+                        outString += tempString;
+                        j += tempString.length - 1;
+                    }
+                }
+            }
             if (strArray[i + 1]) {
                 outString += " | ";
             }
@@ -247,7 +269,7 @@ var dataTable = function () {
      * Accepts an array of strings with the data labels for the SQL column headers to print a formatted table
      * @param {Array} columns
      */
-    this.initialPrint = function (columns = ["item_id", "product_name", "department_name", "price", "stock_quantity"]) {
+    this.initialPrint = function (columns = ["item_id", "product_name", "department_name", "price", "stock_quantity", "product_sales"]) {
         this.printBreak(columns);
         this.printHeaders(columns);
         this.printBreak(columns);
