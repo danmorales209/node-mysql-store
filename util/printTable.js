@@ -156,9 +156,14 @@ var dataTable = function () {
 
             for (i in keys) {
 
+                if (row [ keys[i] ] == null) {
 
+                    outString += this.printEntry( "null" , this.width[ keys [i] ] );
+                }
+                else {
+                    outString += this.printEntry( (row[ keys[i] ]).toString() , this.width[ keys [i] ] );
+                }
                 // keys[i] gets the data in the row, and width [ keys [i] ] gets the max width from the object
-                outString += this.printEntry( (row[ keys[i] ]).toString() , this.width[ keys [i] ] );
 
                 // i is stored as a string for some reason
                 if (keys[Number(i) + 1]) {

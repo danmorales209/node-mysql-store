@@ -173,7 +173,7 @@ var managerPrompt = function (obj) {
 
             case "Add New Product":
 
-                connection.query("SELECT DISTINCT department_name FROM products ORDER BY department_name", function (error, data) {
+                connection.query("SELECT department_name FROM departments ORDER BY department_name", function (error, data) {
                     if (error) throw error;
 
                     // Get an array of the distinct department names
@@ -218,9 +218,9 @@ var managerPrompt = function (obj) {
 
                             connection.query(
                                 `INSERT INTO products
-                                (product_name, department_name, price, stock_quantity)
+                                (product_name, department_name, price, stock_quantity, product_sales)
                                 VALUES
-                                (?, ?, ?, ?)`, // use '?' as placeholder, data will be entered from next argument
+                                (?, ?, ?, ?, 0)`, // use '?' as placeholder, data will be entered from next argument
                                 newProduct, function (error, data) {
                                     if (error) throw error;
                                     console.log("Great success!");
