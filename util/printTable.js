@@ -335,6 +335,7 @@ var dataTable = function () {
 
     /**
      * Accepts an array of strings with the data labels for the SQL column headers to print a formatted table
+     * Default array is set to print all columns in the product table for bamazonCustomer.js
      * @param {Array} columns
      */
     this.initialPrint = function (columns = ["item_id", "product_name", "department_name", "price", "stock_quantity", "product_sales"]) {
