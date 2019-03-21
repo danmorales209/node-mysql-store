@@ -11,7 +11,10 @@ var dataTable = function () {
         department_name: 50,
         price: 15,
         stock_quantity: 10,
-        product_sales: 15
+        product_sales: 15,
+        department_id: 5,
+        overhead_cost: 10,
+        total_profit: 20
     };
 
 
@@ -81,6 +84,24 @@ var dataTable = function () {
 
                 case "product_sales":
                     for (i = 0; i < this.width.product_sales + 2; i++) {
+                        breakString += "-";
+                    }
+                    break;
+
+                case "department_id":
+                    for (i = 0; i < this.width.department_id + 2; i++) {
+                        breakString += "-";
+                    }
+                    break;
+
+                case "overhead_cost":
+                    for (i = 0; i < this.width.overhead_cost + 2; i++) {
+                        breakString += "-";
+                    }
+                    break;
+
+                case "total_profit":
+                    for (i = 0; i < this.width.total_profit + 2; i++) {
                         breakString += "-";
                     }
                     break;
@@ -243,6 +264,48 @@ var dataTable = function () {
             }
             else if (strArray[i] === "product_sales") {
                 tempString = "Sales";
+                padding = this.width[strArray[i]];
+
+                for (let j = 0; j < padding; j++) {
+                    if (j !== 1) {
+                        outString += " ";
+                    }
+                    else {
+                        outString += tempString;
+                        j += tempString.length - 1;
+                    }
+                }
+            }
+            else if (strArray[i] === "department_id") {
+                tempString = "ID";
+                padding = this.width[strArray[i]];
+
+                for (let j = 0; j < padding; j++) {
+                    if (j !== 1) {
+                        outString += " ";
+                    }
+                    else {
+                        outString += tempString;
+                        j += tempString.length - 1;
+                    }
+                }
+            }
+            else if (strArray[i] === "overhead_cost") {
+                tempString = "Overhead";
+                padding = this.width[strArray[i]];
+
+                for (let j = 0; j < padding; j++) {
+                    if (j !== 1) {
+                        outString += " ";
+                    }
+                    else {
+                        outString += tempString;
+                        j += tempString.length - 1;
+                    }
+                }
+            }
+            else if (strArray[i] === "total_profit") {
+                tempString = "Total Profit";
                 padding = this.width[strArray[i]];
 
                 for (let j = 0; j < padding; j++) {
