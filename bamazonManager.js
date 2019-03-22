@@ -52,6 +52,9 @@ var managerPrompt = function (obj) {
         // Function gets called recusrively, so this ensures the SQL server connection is resumed before making queries
         connection.resume();
 
+        console.clear();
+
+
         // Use columns for printing data later, reserve some space now
         let columns = [];
 
@@ -82,6 +85,7 @@ var managerPrompt = function (obj) {
                 break; // End of View Products for sale logic
 
             case "View Low Inventory":
+
 
                 columns = ["item_id", "product_name", "stock_quantity"];
                 

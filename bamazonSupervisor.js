@@ -27,6 +27,7 @@ var main = function () {
  * @param {dataTable} obj 
  */
 var supervisorPrompt = function (obj) {
+
     let choices = ["View Product Sales by Department", "Create New Department", "Quit"];
     inquire
         .prompt(
@@ -37,8 +38,8 @@ var supervisorPrompt = function (obj) {
                 choices: choices,
             }
         ).then(function (response) {
+            console.clear();
             switch (response.choice) {
-
                 case choices[0]:
                     connection.resume();
 
@@ -103,7 +104,7 @@ var supervisorPrompt = function (obj) {
 
                             }
                         ]).then(function (response) {
-                            
+
                             // Resume mySQL server connection once the prompts have been answered
                             connection.resume();
 
@@ -130,7 +131,7 @@ var supervisorPrompt = function (obj) {
 
                 case choices[2]: // Selected Quit
                     console.log("Have a nice day!");
-                    
+
                     // End the mySQL connection
                     connection.end();
                     break;
