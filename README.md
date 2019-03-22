@@ -31,6 +31,7 @@ In order to use Bamazon, ensure the following:
 From the command line, run type ``node bamazonCustomer.js``
 
 The user will be presented with a table of the currently available products for purchase from Bamazon, and prompted to buy an item or exit
+
 | Operation | Result |
 | :-----:   | :---:  |
 |Purchase|![customer_view1](./img/customer-1.gif)|
